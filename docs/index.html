@@ -50,6 +50,85 @@
 </h1></div>
 <p>This package explores strategies for Bioconductor-oriented solutions to importing and analyzing data from Spatial Transcriptomics platforms.</p>
 </div>
+<div class="section level1">
+<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h1>
+<pre><code><span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"HelenaLC/SpatialData"</span><span class="op">)</span> <span class="co"># or use vjcitn repo</span></span></code></pre>
+<p>To <em>interrogate</em> our S3 bucket you will need <a href="https://cran.r-project.org/web/packages/paws/index.html" class="external-link">paws</a> installed; it is not necessary for retrievals.</p>
+</div>
+<div class="section level1">
+<h1 id="ingestion-workflow">Ingestion workflow<a class="anchor" aria-label="anchor" href="#ingestion-workflow"></a>
+</h1>
+<div class="section level2">
+<h2 id="query-bioconductor-open-storage-network-bucket">Query Bioconductor Open Storage Network Bucket<a class="anchor" aria-label="anchor" href="#query-bioconductor-open-storage-network-bucket"></a>
+</h2>
+<pre><code>&gt; available_spd_zarr_zips()  # as of Nov 10 2024
+checking Bioconductor OSN bucket...
+[1] "mcmicro_io.zip"
+[2] "merfish.zarr.zip"
+[3] "mibitof.zip"
+[4] "steinbock_io.zip"
+[5] "visium_associated_xenium_io_aligned.zip"
+[6] "visium_hd_3.0.0_io.zip"                 </code></pre>
+</div>
+<div class="section level2">
+<h2 id="bring-a-zip-archive-into-your-local-cache">Bring a zip archive into your local cache<a class="anchor" aria-label="anchor" href="#bring-a-zip-archive-into-your-local-cache"></a>
+</h2>
+<pre><code><span><span class="va">tf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">tf</span><span class="op">)</span></span>
+<span><span class="va">pa</span> <span class="op">=</span> <span class="fu"><a href="reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"mibitof.zip"</span>, destination<span class="op">=</span><span class="va">tf</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="va">pa</span>, full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># see the files</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="import-the-spatialdata-instance-and-work-with-it">Import the SpatialData instance, and work with it<a class="anchor" aria-label="anchor" href="#import-the-spatialdata-instance-and-work-with-it"></a>
+</h2>
+<pre><code><span><span class="va">mibi</span> <span class="op">=</span> <span class="fu"><a href="reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span></span></code></pre>
+<p>Outputs:</p>
+<pre><code>&gt; mibi
+class: SpatialData
+images(3): point16_image point23_image point8_image
+labels(3): point16_labels point23_labels point8_labels
+shapes(0):
+points(0):
+tables(1): table</code></pre>
+<pre><code>&gt; table(mibi)
+class: SingleCellExperiment
+dim: 36 3309
+metadata(1): spatialdata_attrs
+assays(1): X
+rownames(36): ASCT2 ATP5A ... XBP1 vimentin
+rowData names(0):
+colnames(3309): 9376-1 9377-1 ... 4273-0 4274-0
+colData names(12): row_num point ... batch library_id
+reducedDimNames(3): X_scanorama X_umap spatial
+mainExpName: NULL
+altExpNames(0):</code></pre>
+</div>
+</div>
+<div class="section level1">
+<h1 id="todo-build-provenance-for-each-example">TODO: build provenance for each example<a class="anchor" aria-label="anchor" href="#todo-build-provenance-for-each-example"></a>
+</h1>
+<pre><code><span><span class="va">make_spd_prov</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span> <span class="va">outfile</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">zarr_url</span>,</span>
+<span>   <span class="va">prose_tag</span>,</span>
+<span>   <span class="va">pub_url</span>,</span>
+<span>   <span class="va">date_uploaded</span><span class="op">)</span> <span class="op">{</span></span>
+<span>   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">date_uploaded</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must supply upload date"</span><span class="op">)</span></span>
+<span>   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">pub_url</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must supply pub_url"</span><span class="op">)</span></span>
+<span>   <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing</a></span><span class="op">(</span><span class="va">prose_tag</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"must supply upload prose_tag"</span><span class="op">)</span></span>
+<span>   <span class="va">basic</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    SpatialDataTag <span class="op">=</span> <span class="va">prose_tag</span>,</span>
+<span>    zarr_url <span class="op">=</span> <span class="va">zarr_url</span>,</span>
+<span>    pub_url <span class="op">=</span> <span class="va">pub_url</span>,</span>
+<span>    date_uploaded <span class="op">=</span> <span class="va">date_uploaded</span><span class="op">)</span></span>
+<span>  <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/read_json.html" class="external-link">write_json</a></span><span class="op">(</span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">toJSON</a></span><span class="op">(</span><span class="va">basic</span><span class="op">)</span>, <span class="va">outfile</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">make_spd_prov</span><span class="op">(</span>zarr_url <span class="op">=</span> <span class="st">"https://s3.embl.de/spatialdata/spatialdata-sandbox/xenium_rep1_io_aligned.zip"</span>,</span>
+<span>   prose_tag <span class="op">=</span> <span class="st">"spatialdata notebooks aligned rep1"</span>,</span>
+<span>   pub_url <span class="op">=</span> <span class="st">"https://pubmed.ncbi.nlm.nih.gov/38114474/"</span>,</span>
+<span>   date_uploaded <span class="op">=</span> <span class="st">"2024.11.10"</span><span class="op">)</span></span></code></pre>
+</div>
+
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
