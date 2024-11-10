@@ -1,0 +1,9 @@
+pandoc: '2.13'
+pkgdown: 2.1.1
+pkgdown_sha: ~
+articles:
+  SpatialData: SpatialData.html
+last_built: 2024-11-10T20:12Z
+urls:
+  reference: https://github.com/vjcitn/YESCDS/reference
+  article: https://github.com/vjcitn/YESCDS/articles
