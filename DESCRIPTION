@@ -35,7 +35,8 @@ Suggests:
     BiocStyle,
     ggnewscale,
     knitr,
-    testthat
+    testthat,
+    patchwork
 Enhances:
     paws
 biocViews: 
