@@ -15,7 +15,7 @@
 \usage{
 plotSpatialData()
 
-\S4method{plotImage}{SpatialData}(x, i = 1, j = 1)
+\S4method{plotImage}{SpatialData}(x, i = 1, j = 1, k = NULL)
 
 \S4method{plotLabel}{SpatialData}(x, i = 1, c = NULL, a = 0.5, pal = hcl.colors(11, "Spectral"))
 
@@ -25,6 +25,27 @@ plotSpatialData()
 
 \S4method{plotShape}{SpatialData}(x, i = 1, c = NULL, f = "white", s = "radius", a = 0.2)
 }
+\arguments{
+\item{x}{SpatialData}
+
+\item{i}{Index of which slot of the Shape layer. Default value is 1.}
+
+\item{j}{name of target coordinate system.}
+
+\item{k}{index of the scale of an image (default: NULL)}
+
+\item{c, f, s, a}{plotting aesthetics; color, fill, size, alpha.}
+
+\item{a}{Transparency of the shape to plot. A value ranges from 0 to 1, 
+with decreasing visibility. Default value is 0.2.}
+
+\item{pal}{character vector of colors; will interpolate 
+automatically when insufficient values are provided.}
+
+\item{s}{Size of the shape to plot. Default is "radius".}
+
+\item{c}{Color border of the shape to plot. Default value is NULL.}
+}
 \value{
 ggplot
 }
@@ -32,9 +53,9 @@ ggplot
 ...
 }
 \examples{
-tf = tempfile()
+tf <- tempfile()
 dir.create(tf)
-base = unzip_merfish_demo(tf)
+base <- unzip_merfish_demo(tf)
 (x <- readSpatialData(base, tables=FALSE))
 
 plotImage(x)

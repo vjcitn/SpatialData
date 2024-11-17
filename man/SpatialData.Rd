@@ -6,7 +6,34 @@
 \alias{.SpatialData}
 \alias{SpatialData}
 \alias{$,SpatialData-method}
-\alias{[[,SpatialData,ANY,ANY-method}
+\alias{[[,SpatialData-method}
+\alias{image}
+\alias{images}
+\alias{image<-}
+\alias{images<-}
+\alias{imageNames}
+\alias{label}
+\alias{labell}
+\alias{label<-}
+\alias{labels<-}
+\alias{labelNames}
+\alias{point}
+\alias{points}
+\alias{point<-}
+\alias{points<-}
+\alias{pointNames}
+\alias{shape}
+\alias{shapes}
+\alias{shape<-}
+\alias{shapes<-}
+\alias{shapeNames}
+\alias{table}
+\alias{tables}
+\alias{table<-}
+\alias{tables<-}
+\alias{tableNames}
+\alias{data,SpatialDataElement-method}
+\alias{meta,SpatialDataElement-method}
 \alias{images,SpatialData-method}
 \alias{labels,SpatialData-method}
 \alias{shapes,SpatialData-method}
@@ -22,16 +49,18 @@
 \alias{shape,SpatialData-method}
 \alias{point,SpatialData-method}
 \alias{table,SpatialData-method}
+\alias{[[<-,SpatialData,numeric,ANY,ANY-method}
+\alias{[[<-,SpatialData,character,ANY,ANY-method}
 \alias{images<-,SpatialData,list-method}
 \alias{labels<-,SpatialData,list-method}
 \alias{shapes<-,SpatialData,list-method}
 \alias{points<-,SpatialData,list-method}
 \alias{tables<-,SpatialData,list-method}
-\alias{image<-,SpatialData,character,PointFrame-method}
+\alias{image<-,SpatialData,character,ImageArray-method}
 \alias{label<-,SpatialData,character,LabelArray-method}
 \alias{point<-,SpatialData,character,PointFrame-method}
-\alias{shape<-,SpatialData,character,PointFrame-method}
-\alias{table<-,SpatialData,character,PointFrame-method}
+\alias{shape<-,SpatialData,character,ShapeFrame-method}
+\alias{table<-,SpatialData,character,SingleCellExperiment-method}
 \alias{image<-,SpatialData,numeric,ImageArray-method}
 \alias{label<-,SpatialData,numeric,LabelArray-method}
 \alias{point<-,SpatialData,numeric,PointFrame-method}
@@ -58,7 +87,9 @@ SpatialData(images, labels, points, shapes, tables)
 
 \S4method{$}{SpatialData}(x, name)
 
-\S4method{[[}{SpatialData,ANY,ANY}(x, i, j, ...)
+\S4method{data}{SpatialDataElement}(x)
+
+\S4method{meta}{SpatialDataElement}(x)
 
 \S4method{images}{SpatialData}(x)
 
@@ -90,6 +121,10 @@ SpatialData(images, labels, points, shapes, tables)
 
 \S4method{table}{SpatialData}(x, i = 1)
 
+\S4method{[[}{SpatialData,numeric,ANY,ANY}(x, i) <- value
+
+\S4method{[[}{SpatialData,character,ANY,ANY}(x, i) <- value
+
 \S4method{images}{SpatialData,list}(x) <- value
 
 \S4method{labels}{SpatialData,list}(x) <- value
@@ -100,15 +135,15 @@ SpatialData(images, labels, points, shapes, tables)
 
 \S4method{tables}{SpatialData,list}(x) <- value
 
-\S4method{image}{SpatialData,character,PointFrame}(x, i) <- value
+\S4method{image}{SpatialData,character,ImageArray}(x, i) <- value
 
 \S4method{label}{SpatialData,character,LabelArray}(x, i) <- value
 
 \S4method{point}{SpatialData,character,PointFrame}(x, i) <- value
 
-\S4method{shape}{SpatialData,character,PointFrame}(x, i) <- value
+\S4method{shape}{SpatialData,character,ShapeFrame}(x, i) <- value
 
-\S4method{table}{SpatialData,character,PointFrame}(x, i) <- value
+\S4method{table}{SpatialData,character,SingleCellExperiment}(x, i) <- value
 
 \S4method{image}{SpatialData,numeric,ImageArray}(x, i = 1) <- value
 
@@ -150,6 +185,31 @@ SpatialData(images, labels, points, shapes, tables)
 
 \S4method{table}{SpatialData,ANY,ANY}(x, i) <- value
 }
+\arguments{
+\item{images}{list of \code{\link{ImageArray}}s}
+
+\item{labels}{list of \code{\link{LabelArray}}s}
+
+\item{points}{list of \code{\link{PointFrame}}s}
+
+\item{shapes}{list of \code{\link{ShapeFrame}}s}
+
+\item{tables}{list of \code{SingleCellExperiment}s}
+
+\item{x}{\code{SpatialData}}
+
+\item{name}{character string for extraction (see \code{?base::`$`}).}
+
+\item{i}{character string, scalar or vector of indices
+specifying the element to extract from a given layer.}
+
+\item{value}{(list of) element(s) with layer-compliant object(s), 
+or NULL/\code{list()} to remove an element/layer completely.}
+
+\item{j}{ignored.}
+
+\item{...}{optional arguments passed to and from other methods.}
+}
 \value{
 \code{SpatialData}
 }
@@ -157,9 +217,16 @@ SpatialData(images, labels, points, shapes, tables)
 ...
 }
 \examples{
-tf = tempfile()
-dir.create(tf)
-base = unzip_merfish_demo(tf)
-(x <- readSpatialData(base, tables=TRUE))
+x <- file.path("extdata", "blobs.zarr")
+x <- system.file(x, package="SpatialData")
+(x <- readSpatialData(x, tables=FALSE))
+
+# subsetting
+# layers are taken in order of appearance
+# (images, labels, points, shapes, tables)
+x[-4] # drop layer
+x[4, -2] # drop element
+x["shapes", c(1, 3)] # subset layer
+x[c(1, 2), list(1, c(1, 2))] # multiple
 
 }

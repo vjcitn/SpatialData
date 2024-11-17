@@ -1,31 +1,57 @@
 Package: SpatialData
 Title: Representation of Python's SpatialData in R
-Depends: R (>= 4.4), SingleCellExperiment
-Version: 0.99.5
-Description: TODO
+Depends: R (>= 4.4)
+Version: 0.99.14
+Description: Interface to Python's 'SpatialData', currently including:
+    reticulate-based use of 'spatialdata-io' for reading of manufracturer
+    data and writing to .zarr, on-disk representation of images/labels as
+    'ZarrArray's ('Rarr') and shapes/points as 'arrow' objects, and method 
+    drafts for visualization and coordinate system handling. In addition,
+    'scverse' data examples have been made available through the NSF OSN, 
+    are accessible from within R, and cached using 'BiocFileCache'. Also,
+    there's an interface to aligning data into a common (identity) space.
 Authors@R: c(
 	person("Helena L.", "Crowell", 
 	    role=c("aut", "cre"),
 	    email="helena@crowell.eu", 
 	    comment=c(ORCID="0000-0002-4801-1767")),
-        person(given = "Vince",
-           family = "Carey",
-           role = c("aut"),
-           email = "stvjc@channing.harvard.edu",
-           comment = c(ORCID = "0000-0003-4046-0063"))
-        )
+    person("Vince", "Carey",
+        role=c("aut"),
+        email="stvjc@channing.harvard.edu",
+        comment=c(ORCID="0000-0003-4046-0063")),
+    person("Yixing E.", "Dong",
+        role=c("aut"),
+        email="estelladong729@gmail.com",
+        comment=c(ORCID="0009-0003-5115-5686")),
+    person("Artür", "Manukyan",
+        role=c("aut"),
+        email="artur-man@hotmail.com",
+        comment=c(ORCID="0000-0002-0441-9517")),
+    person("Dario", "Righelli", 
+        role=c("aut"), 
+        email="dario.righelli@gmail.com",
+        comment=c(ORCID="0000-0003-1504-3583")),
+    person("Louise", "Deconinck",
+        role=c("aut"),
+        email="louise.deconinck@gmail.com",
+        comment=c(ORCID="0000-0001-8100-6823")))
 Imports:
     abind,
     arrow,
     basilisk,
     dplyr,
-    EBImage,
+    DelayedArray,
     geoarrow,
     ggplot2,
+    ggforce,
+    graph,
     jsonlite,
+    RBGL,
     rlang,
     sf,
     S4Vectors,
+    SingleCellExperiment,
+    SummarizedExperiment,
     zellkonverter,
     BiocGenerics,
     S4Arrays,
@@ -34,22 +60,33 @@ Imports:
     BiocFileCache,
     methods
 Suggests:
+    anndataR,
     BiocStyle,
     ggnewscale,
     knitr,
-    testthat
+    patchwork,
+    pizzarr,
+    Rgraphviz,
+    testthat,
+    magick,
+    paws
+Remotes:
+    keller-mark/pizzarr,
+    keller-mark/anndataR@spatialdata
 Enhances:
     paws
 biocViews: 
-  DataImport, 
-  DataRepresentation, 
-  Infrastructure, 
-  ImmunoOncology, 
-  GeneExpression, 
-  Transcriptomics, 
-  SingleCell,
-  Spatial
+    DataImport, 
+    DataRepresentation, 
+    Infrastructure, 
+    ImmunoOncology, 
+    GeneExpression, 
+    Transcriptomics, 
+    SingleCell,
+    Spatial
 License: Artistic-2.0
 RoxygenNote: 7.3.2
 Encoding: UTF-8
 VignetteBuilder: knitr
+URL: https://github.com/HelenaLC/SpatialData
+BugReports: https://github.com/HelenaLC/SpatialData/issues

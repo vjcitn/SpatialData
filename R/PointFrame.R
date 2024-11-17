@@ -1,10 +1,21 @@
 #' @name PointFrame
 #' @title The `PointFrame` class
 #'
+#' @param x,.data \code{PointFrame}
+#' @param data \code{arrow}-derived table for on-disk,
+#'   \code{data.frame} for in-memory representation.
+#' @param meta \code{\link{Zattrs}}
+#' @param metadata optional list of arbitrary 
+#'   content describing the overall object.
+#' @param drop ignored.
+#' @param i,j indices for subsetting (see \code{?base::Extract}).
+#' @param name character string for extraction (see \code{?base::`$`}).
+#' @param ... optional arguments passed to and from other methods.
+#'
 #' @return \code{PointFrame}
 #'
 #' @examples
-#' tf = tempfile()
+#' tf <- tempfile()
 #' dir.create(tf)
 #' base <- unzip_merfish_demo(tf)
 #' x <- file.path(base, "points", "single_molecule")
@@ -15,6 +26,7 @@
 #' plotPoint(q, c="x", s=0.2)
 #'
 #' @importFrom S4Vectors metadata<-
+#' @importFrom methods new
 #' @export
 PointFrame <- function(data=data.frame(), meta=Zattrs(), metadata=list(), ...) {
     x <- .PointFrame(data=data, meta=meta, ...)
@@ -52,16 +64,34 @@ setMethod("$", "PointFrame", \(x, name) {
 setMethod("[[", "PointFrame", \(x, i, ...) {
     collect(select(x@data, all_of(i)))[[1]] })
 
+# sub ----
+
+#' @rdname PointFrame
+#' @export
+setMethod("[", c("PointFrame", "missing", "ANY"), 
+    \(x, i, j, ...) x[seq_len(nrow(x)), j])
+
+#' @rdname PointFrame
+#' @export
+setMethod("[", c("PointFrame", "ANY", "missing"), 
+    \(x, i, j, ...) x[i, seq_len(ncol(x))])
+
+#' @rdname PointFrame
+#' @export
+setMethod("[", c("PointFrame", "missing", "missing"), 
+    \(x, i, j, ...) x[seq_len(nrow(x)), seq_len(ncol(x))])
+
 #' @rdname PointFrame
 #' @importFrom dplyr mutate filter select
 #' @export
-setMethod("[", c("PointFrame", "numeric"), \(x, i, ...) {
+setMethod("[", c("PointFrame", "numeric", "numeric"), \(x, i, j, ...) {
     .i <- `__null_dask_index__` <- NULL # R CMD check
-    j <- seq_len(length(x))[i]
+    i <- seq_len(nrow(x))[i]
     x@data <- data(x) |>
         mutate(.i=1+`__null_dask_index__`) |>
-        filter(.i %in% j) |>
+        filter(.i %in% i) |>
         select(-.i)
+    x@data <- x@data[, j]
     return(x)
 })
 
@@ -76,8 +106,14 @@ setAs(
 
 #' @importFrom dplyr filter
 #' @export
-filter.PointFrame <- \(x, ...) { x@data <- filter(data(x), ...); x }
+filter.PointFrame <- \(.data, ...) { 
+    .data@data <- filter(data(.data), ...)
+    return(.data)
+}
 
 #' @importFrom dplyr select
 #' @export
-select.PointFrame <- \(x, ...) { x@data <- select(data(x), ...); x }
+select.PointFrame <- \(.data, ...) { 
+    .data@data <- select(data(.data), ...)
+    return(.data)
+}

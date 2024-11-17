@@ -6,12 +6,15 @@
 #' @exportMethod $
 setMethod("$", "SpatialData", \(x, name) attr(x, name))
 
-#' @rdname SpatialData
-#' @exportMethod [[
-setMethod("[[", "SpatialData", \(x, i, ...) {
-    j <- grep(i, names(attributes(x)), value=TRUE)
-    if (length(j)) return(attr(x, j))
-    stop("'SpatialData' has no element '", i, "'")
+#' @export
+setMethod("[[", c("SpatialData", "numeric"), \(x, i, ...) {
+    i <- .LAYERS[i]
+    callNextMethod(x, i)
+})
+
+#' @export
+setMethod("[[", c("SpatialData", "character"), \(x, i, ...) {
+    attr(x, grep(i, names(attributes(x)), value=TRUE))
 })
 
 #' @importFrom utils getFromNamespace
@@ -37,9 +40,63 @@ setMethod("[[", "SpatialData", \(x, i, ...) {
     return(i)
 }
 
+# sub ----
+
+setMethod("[", "SpatialData", \(x, i, j, ..., drop=FALSE) {
+    if (missing(i)) i <- TRUE
+    if (missing(j)) j <- TRUE
+    i <- if (isFALSE(i)) {
+        numeric()
+    } else if (isTRUE(i)) {
+        seq_along(.LAYERS)
+    } else if (is.numeric(i) | is.logical(i)) {
+        seq_along(.LAYERS)[i]
+    } else if (is.character(i)) {
+        i <- match.arg(i, .LAYERS, TRUE)
+        which(.LAYERS %in% i)
+    }
+    if (any(is.na(i))) stop("out of bounds 'i'")
+    # TODO: validity
+    if (isTRUE(j)) {
+        j <- replicate(length(i), TRUE, FALSE)
+    } else {
+        if (length(i) == 1) {
+            if (!is.list(j)) j <- list(j)
+        } else {
+            if (length(i) != length(j)) stop()
+        }
+    }
+    for (. in setdiff(seq_along(.LAYERS), i)) x[[.]] <- list()
+    .e <- \(.) stop("out of bounds 'j' for layer ", ., " (", .LAYERS[.], ")")
+    for (. in seq_along(i)) {
+        j[[.]] <- if (isFALSE(j[[.]])) {
+            numeric()
+        } else if (isTRUE(j[[.]])) {
+            seq_along(x[[i[.]]])
+        } else if (is.numeric(j[[.]]) | is.logical(j[[.]])) {
+            seq_along(x[[i[.]]])[j[[.]]]
+        } else if (is.character(j[[.]])) {
+            js <- names(x[[i[.]]])
+            if (any(!j[[.]] %in% js)) .e(i[.])
+            j[[.]] <- which(js %in% j[[.]])
+        }
+        js <- seq_along(x[[i[.]]])
+        if (!isTRUE(j[[.]])) {
+            if (any(!j[[.]] %in% js)) .e(i[.])
+            x[[i[.]]] <- x[[i[.]]][j[[.]]]
+        }
+    }
+    return(x)
+})
+
 # any ----
 
+#' @rdname SpatialData
+#' @export
 setMethod("data", "SpatialDataElement", \(x) x@data)
+
+#' @rdname SpatialData
+#' @export
 setMethod("meta", "SpatialDataElement", \(x) x@meta)
 
 # get all ----
@@ -120,6 +177,16 @@ setMethod("table", "SpatialData", \(x, i=1) {
 
 # set all ----
 
+#' @rdname SpatialData
+#' @export
+setReplaceMethod("[[", c("SpatialData", "numeric"), 
+    \(x, i, value) { attr(x, .LAYERS[i]) <- value; return(x) })
+
+#' @rdname SpatialData
+#' @export
+setReplaceMethod("[[", c("SpatialData", "character"), 
+    \(x, i, value) {attr(x, i) <- value; return(x) })
+
 # |_value=list ----
 
 #' @rdname SpatialData
@@ -157,7 +224,7 @@ setReplaceMethod("tables",
 #' @rdname SpatialData
 #' @export
 setReplaceMethod("image",
-    c("SpatialData", "character", "PointFrame"),
+    c("SpatialData", "character", "ImageArray"),
     \(x, i, value) { x@images[[i]] <- value; x })
 
 #' @rdname SpatialData
@@ -175,13 +242,13 @@ setReplaceMethod("point",
 #' @rdname SpatialData
 #' @export
 setReplaceMethod("shape",
-    c("SpatialData", "character", "PointFrame"),
+    c("SpatialData", "character", "ShapeFrame"),
     \(x, i, value) { x@shapes[[i]] <- value; x })
 
 #' @rdname SpatialData
 #' @export
 setReplaceMethod("table",
-    c("SpatialData", "character", "PointFrame"),
+    c("SpatialData", "character", "SingleCellExperiment"),
     \(x, i, value) { x@tables[[i]] <- value; x })
 
 # TODO: something like table(x)$cluster_id <- doesn't work atm... 

@@ -3,17 +3,32 @@
 \name{LabelArray}
 \alias{LabelArray}
 \alias{dim,LabelArray-method}
-\title{LabelArray}
+\alias{[,LabelArray,ANY,ANY,ANY-method}
+\title{The `LabelArray` class}
 \usage{
 LabelArray(data = array(), meta = Zattrs(), metadata = list(), ...)
 
 \S4method{dim}{LabelArray}(x)
+
+\S4method{[}{LabelArray,ANY,ANY,ANY}(x, i, j, ..., drop = FALSE)
+}
+\arguments{
+\item{data}{list of \code{\link[Rarr]{ZarrArray}}s}
+
+\item{meta}{\code{\link{Zattrs}}}
+
+\item{metadata}{optional list of arbitrary 
+content describing the overall object.}
+
+\item{...}{option arguments passed to and from other methods.}
+
+\item{x}{\code{LabelArray}}
 }
 \value{
-...
+\code{LabelArray}
 }
 \description{
-LabelArray
+The `LabelArray` class
 }
 \examples{
 # TODO

@@ -7,7 +7,10 @@
 \alias{length,PointFrame-method}
 \alias{$,PointFrame-method}
 \alias{[[,PointFrame,ANY,ANY-method}
-\alias{[,PointFrame,numeric,ANY,ANY-method}
+\alias{[,PointFrame,missing,ANY,ANY-method}
+\alias{[,PointFrame,ANY,missing,ANY-method}
+\alias{[,PointFrame,missing,missing,ANY-method}
+\alias{[,PointFrame,numeric,numeric,ANY-method}
 \alias{as.data.frame,PointFrame-method}
 \title{The `PointFrame` class}
 \usage{
@@ -23,9 +26,34 @@ PointFrame(data = data.frame(), meta = Zattrs(), metadata = list(), ...)
 
 \S4method{[[}{PointFrame,ANY,ANY}(x, i, j, ...)
 
-\S4method{[}{PointFrame,numeric,ANY,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{PointFrame,missing,ANY,ANY}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{PointFrame,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{PointFrame,missing,missing,ANY}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{PointFrame,numeric,numeric,ANY}(x, i, j, ..., drop = TRUE)
 
 \S4method{as.data.frame}{PointFrame}(x)
+}
+\arguments{
+\item{data}{\code{arrow}-derived table for on-disk,
+\code{data.frame} for in-memory representation.}
+
+\item{meta}{\code{\link{Zattrs}}}
+
+\item{metadata}{optional list of arbitrary 
+content describing the overall object.}
+
+\item{...}{optional arguments passed to and from other methods.}
+
+\item{x, .data}{\code{PointFrame}}
+
+\item{name}{character string for extraction (see \code{?base::`$`}).}
+
+\item{i, j}{indices for subsetting (see \code{?base::Extract}).}
+
+\item{drop}{ignored.}
 }
 \value{
 \code{PointFrame}
@@ -34,7 +62,7 @@ PointFrame(data = data.frame(), meta = Zattrs(), metadata = list(), ...)
 The `PointFrame` class
 }
 \examples{
-tf = tempfile()
+tf <- tempfile()
 dir.create(tf)
 base <- unzip_merfish_demo(tf)
 x <- file.path(base, "points", "single_molecule")

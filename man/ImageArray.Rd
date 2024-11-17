@@ -2,20 +2,40 @@
 % Please edit documentation in R/ImageArray.R
 \name{ImageArray}
 \alias{ImageArray}
+\alias{data,ImageArray-method}
 \alias{dim,ImageArray-method}
-\title{ImageArray}
+\title{The `ImageArray` class}
 \usage{
-ImageArray(data = array(), meta = Zattrs(), metadata = list(), ...)
+ImageArray(data = list(), meta = Zattrs(), metadata = list(), ...)
+
+\S4method{data}{ImageArray}(x, i = 1)
 
 \S4method{dim}{ImageArray}(x)
 }
+\arguments{
+\item{data}{list of \code{\link[Rarr]{ZarrArray}}s}
+
+\item{meta}{\code{\link{Zattrs}}}
+
+\item{metadata}{optional list of arbitrary 
+content describing the overall object.}
+
+\item{...}{option arguments passed to and from other methods.}
+
+\item{x}{\code{ImageArray}}
+
+\item{scale}{scalar index specifying which resolution to extract.}
+}
 \value{
-...
+\code{ImageArray}
 }
 \description{
-ImageArray
+The `ImageArray` class
 }
 \examples{
-# TODO
+dir.create(td <- tempfile())
+pa <- unzip_merfish_demo(td)
+pa <- file.path(pa, "images", "rasterized")
+(ia <- readImage(pa))
 
 }

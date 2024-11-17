@@ -9,23 +9,24 @@
 \alias{readTable}
 \title{Reading `SpatialData`}
 \usage{
-readImage(x)
+readImage(x, ...)
 
-readLabel(x)
+readLabel(x, ...)
 
-readPoint(x)
+readPoint(x, ...)
 
-readShape(x)
+readShape(x, ...)
 
-readTable(x)
+readTable(x, anndataR = FALSE)
 
 readSpatialData(
   x,
-  images = NULL,
-  labels = NULL,
-  points = NULL,
-  shapes = NULL,
-  tables = NULL
+  images = TRUE,
+  labels = TRUE,
+  points = TRUE,
+  shapes = TRUE,
+  tables = TRUE,
+  anndataR = TRUE
 )
 }
 \arguments{
@@ -34,22 +35,28 @@ path to a \code{SpatialData} element.
 For \code{readSpatialData},
 path to a \code{SpatialData}-.zarr store.}
 
+\item{...}{option arguments passed to and from other methods.}
+
+\item{anndataR}{logical specifying whether 
+to use \code{anndataR} to read tables; by default (FALSE), 
+\code{basilisk}, \code{anndata} and \code{zellkonverter} are used.}
+
 \item{images, labels, points, shapes, tables}{Control which elements should be read for each layer.
 The default, NULL, reads all elements; alternatively, may be FALSE 
 to skip a layer, or a integer vector specifying which elements to read.}
 }
 \value{
 \itemize{
+\item{For \code{readSpatialData}, a \code{SpatialData}.},
 \item{For element readers, a \code{ImageArray}, \code{LabelArray}, 
-\code{PointFrame}, \code{ShapeFrame}, or \code{SingleCellExperiment}.}
-\item{For \code{readSpatialData}, a \code{SpatialData}.}}
+\code{PointFrame}, \code{ShapeFrame}, or \code{SingleCellExperiment}.}}
 }
 \description{
 Reading `SpatialData`
 }
 \examples{
-tf = tempfile()
+tf <- tempfile()
 dir.create(tf)
-base = unzip_merfish_demo(tf)
+base <- unzip_merfish_demo(tf)
 (x <- readSpatialData(base))
 }

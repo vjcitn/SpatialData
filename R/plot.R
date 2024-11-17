@@ -4,12 +4,20 @@
 #' 
 #' @description ...
 #'
+#' @param x \code{\link{SpatialData}} object.
+#' @param i element to use from a given layer.
+#' @param j name of target coordinate system. 
+#' @param k index of the scale of an image (default: NULL)
+#' @param c,f,s,a plotting aesthetics; color, fill, size, alpha.
+#' @param pal character vector of colors; will interpolate 
+#'   automatically when insufficient values are provided.
+#'
 #' @return ggplot
 #'
 #' @examples
-#' tf = tempfile()
+#' tf <- tempfile()
 #' dir.create(tf)
-#' base = unzip_merfish_demo(tf)
+#' base <- unzip_merfish_demo(tf)
 #' (x <- readSpatialData(base, tables=FALSE))
 #' 
 #' plotImage(x)
@@ -18,6 +26,7 @@
 #' @import ggplot2
 NULL
 
+#' @importFrom grDevices col2rgb
 .str_is_col <- \(x) !inherits(tryCatch(error=\(e) e, col2rgb(x)), "error")
 
 .theme <- list(
@@ -36,49 +45,66 @@ plotSpatialData <- \() ggplot() + scale_y_reverse() + .theme
 
 # image ----
 
+#' @importFrom methods as
 #' @importFrom abind abind
 #' @importFrom grDevices rgb
-.df_i <- \(x) {
-    a <- as.array(data(x)/255)
-    c <- if (dim(a)[1] == 1) rep(1, 3) else seq(3)
-    z <- do.call(rgb, lapply(c, \(.) a[., , ]))
-    data.frame(x=c(col(a[1, , ])), y=c(row(a[1, , ])), z=c(z))
+#' @importFrom DelayedArray realize
+.df_i <- \(x, k=NULL) {
+    a <- .get_plot_data(x, k)
+    if (max(a) > 1) a <- a/255
+    a <- if (dim(a)[1] == 1) a[rep(1,3),,] else a
+    a <- realize(as(a, "DelayedArray"))
+    apply(a, c(2, 3), \(.) do.call(rgb, as.list(.)))
 }
 
-.gg_i <- \(df) list(
-    scale_fill_identity(),
-    geom_tile(aes(x, y, fill=z), df))
+.get_wh <- \(x, i, j) {
+    g <- .coord2graph(x)
+    p <- .get_path(g, i, j)
+    d <- dim(data(image(x, i), 1))
+    h <- c(0, d[2]); w <- c(0, d[3])
+    for (. in seq_along(p)) {
+        t <- p[[.]]$type
+        d <- p[[.]]$data
+        switch(t, 
+            identity={ },
+            translation={ h <- h+d[2]; w <- h+d[3] }, 
+            scale={ h <- h*d[2]; w <- h*d[3] },
+            stop("transformation of type '", t, "' not yet supported"))
+    }
+    list(w=w, h=h)
+}
+
+.gg_i <- \(x, w, h) list(
+    ggplot2::annotation_raster(x, w[2], w[1], -h[1], -h[2], interpolate=FALSE),
+    scale_y_reverse(limits=c(h[2], h[1])),
+    xlim(w[1], w[2])
+)
 
 #' @rdname plotSpatialData
 #' @export
-setMethod("plotImage", "SpatialData", \(x, i=1, j=1) {
-    df <- .df_i(y <- image(x, i))
-    if (!is.null(t <- getTS(y, j)))
-        for (. in seq(nrow(t))) {
-            typ <- t$type[.]
-            dat <- t[[typ]][.][[1]]
-            switch(typ, 
-                translation={
-                    df$x <- df$x+dat[3]
-                    df$y <- df$y+dat[2]
-                }, 
-                scale={
-                    df$x <- df$x*dat[3]
-                    df$y <- df$y*dat[2]
-                })
-        }
-    .gg_i(df)
+setMethod("plotImage", "SpatialData", \(x, i=1, j=1, k=NULL) {
+    if (is.numeric(i)) 
+        i <- imageNames(x)[i]
+    y <- image(x, i)
+    if (is.numeric(j)) 
+        j <- coordTransName(y)[j]
+    df <- .df_i(y, k)
+    wh <- .get_wh(x, i, j)
+    .gg_i(df, wh$w, wh$h)
 })
     
 # label ----
 
 #' @rdname plotSpatialData
-#' @importFrom grDevices colorRampPalette
+#' @importFrom grDevices hcl.colors colorRampPalette
+#' @importFrom S4Vectors metadata
 #' @importFrom abind abind
+#' @importFrom methods as
 #' @export
 setMethod("plotLabel", "SpatialData", \(x, i=1, c=NULL, a=0.5,
     pal=hcl.colors(11, "Spectral")) {
-    y <- as.matrix(data(label(x, i)))
+    .data <- NULL # R CMD check
+    y <- as.matrix(as(data(label(x, i)), "DelayedArray"))
     df <- data.frame(x=c(col(y)), y=c(row(y)), z=c(y))
     if (!is.null(c)) {
         se <- table(x)
@@ -91,12 +117,12 @@ setMethod("plotLabel", "SpatialData", \(x, i=1, c=NULL, a=0.5,
             theme(legend.key.size=unit(0.5, "lines")),
             guides(fill=guide_legend(override.aes=list(alpha=1))))
     } else {
-        thm <- theme(legend.position="none")
+        thm <- guides(fill="none")
     }
     val <- sort(setdiff(unique(df$z), NA))
     pal <- colorRampPalette(pal)(length(val))
     list(thm, 
-        geom_tile(aes(x, y, fill=factor(z)), df, alpha=a),
+        geom_tile(aes(x, y, fill=factor(.data$z)), df, alpha=a),
         scale_fill_manual(c, values=pal, breaks=val, na.value=NA))
 })
 
@@ -110,6 +136,7 @@ setMethod("plotLabel", "SpatialData", \(x, i=1, c=NULL, a=0.5,
             aes$colour <- aes(.data[[c]])[[1]]
             lgd <- scale_type(df[[c]])
         } else if (.str_is_col(c)) {
+            lgd <- "none"
             dot$colour <- c
         }
     } else lgd <- "none"
@@ -122,7 +149,7 @@ setMethod("plotLabel", "SpatialData", \(x, i=1, c=NULL, a=0.5,
     }
     dot$alpha <- a
     list(
-        do.call(geom_point, c(list(data=df, mapping=aes), dot)),
+        do.call(geom_point, c(list(data=df, mapping=aes), dot)), 
         if (lgd == "discrete") list(
             theme(legend.key.size=unit(0, "lines")),
             guides(col=guide_legend(override.aes=list(alpha=1, size=2)))
@@ -135,6 +162,15 @@ setMethod("plotLabel", "SpatialData", \(x, i=1, c=NULL, a=0.5,
     )
 }
 
+#' @param x SpatialData 
+#' @param i Index of which slot of the Shape layer. Default value is 1.
+#' @param c Color border of the shape to plot. Default value is NULL.
+#' @param s Column name of interest in the shape coordinate file. If the geometry
+#' is "POINT" (i.e. a circle), the default column name is "radius". Otherwise it 
+#' is not needed for other geometry shapes such as "POLYGON".
+#' @param a Transparency of the shape to plot. A value ranges from 0 to 1, 
+#' with decreasing visibility. Default value is 0.2.
+#'
 #' @rdname plotSpatialData
 #' @export
 setMethod("plotPoint", "SpatialData", \(x, i=1, c=NULL, s=1, a=1) {
@@ -149,10 +185,13 @@ setMethod("plotPoint", "PointFrame", \(x, c=NULL, s=1, a=1) {
 
 # shape ----
 
+#' @param s Size of the shape to plot. Default is "radius".
+#'
 #' @rdname plotSpatialData
 #' @importFrom sf st_as_sf st_coordinates st_geometry_type
+#' @importFrom ggforce geom_circle
 #' @export
-setMethod("plotShape", "SpatialData", \(x, i=1, c=NULL, f="white", s="radius", a=0.2) {
+setMethod("plotShape", signature = "SpatialData", \(x, i=1, c=NULL, f="white", s="radius", a=0.2) {
     if (is.numeric(i)) 
         i <- shapeNames(x)[i]
     df <- data(shape(x, i))
@@ -164,8 +203,9 @@ setMethod("plotShape", "SpatialData", \(x, i=1, c=NULL, f="white", s="radius", a
     dot <- list(fill=f, alpha=a)
     # TODO: need separate plotting for different types of shapes
     switch(typ,
+        # POINT means circle
         POINT={
-            geo <- geom_point
+            geo <- geom_circle
             names(xs) <- xs <- setdiff(names(df), "geometry")
             df <- data.frame(xy, lapply(xs, \(.) df[[.]]))
             names(df) <- c("x", "y", xs)
@@ -180,7 +220,9 @@ setMethod("plotShape", "SpatialData", \(x, i=1, c=NULL, f="white", s="radius", a
             if (is.numeric(s)) {
                 dot$size <- s
             } else if (!is.null(s)) {
-                aes$size <- aes(.data[[s]])[[1]]
+              aes$x0 <- df$x
+              aes$y0 <- df$y
+              aes$r <- aes(.data[[s]])[[1]]
             } else stop("invalid 's'")
         },
         POLYGON={
@@ -199,23 +241,13 @@ setMethod("plotShape", "SpatialData", \(x, i=1, c=NULL, f="white", s="radius", a
         do.call(geo, c(list(data=df, mapping=aes), dot)))
 })
 
-.get_tbl <- \(df, x, i) {
-    md <- metadata(se <- table(x))[[1]]
-    se <- se[, se[[md$region_key]] == i]
-    j <- setdiff(names(colData(se)), names(df))
-    i <- match(df[[md$instance_key]], se[[md$instance_key]])
-    cbind(df, colData(se)[i, j])
-}
 
-# WON'T WORK POST 11/4/2024:
-# x <- file.path("extdata", "merfish.zarr")
-# x <- system.file(x, package="SpatialData")
-# x <- readSpatialData(x)
-# x@tables$table$foo <- runif(ncol(table(x)))
-# plotSpatialData() +
-#     plotShape(x, i=2, c="foo", s="x", a=1) +
-#     scale_size_continuous(range=c(0, 2)) +
-#     scale_color_viridis_c(option="E")
-# plotSpatialData() +
-#     plotShape(x, i=1, c=NULL) +
-#     theme(panel.background=element_rect(fill="black"))
+#' @importFrom SummarizedExperiment colData
+#' @importFrom S4Vectors metadata
+.get_tbl <- \(df, x, i) {
+  md <- metadata(se <- table(x))[[1]]
+  se <- se[, se[[md$region_key]] == i]
+  j <- setdiff(names(colData(se)), names(df))
+  i <- match(df[[md$instance_key]], se[[md$instance_key]])
+  cbind(df, colData(se)[i, j])
+}
