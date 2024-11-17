@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialData</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/HelenaLC/SpatialData/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -28,7 +29,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>The `SpatialData` class</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/HelenaLC/SpatialData/blob/HEAD/R/AllClasses.R" class="external-link"><code>R/AllClasses.R</code></a>, <a href="https://github.com/HelenaLC/SpatialData/blob/HEAD/R/SpatialData.R" class="external-link"><code>R/SpatialData.R</code></a>, <a href="https://github.com/HelenaLC/SpatialData/blob/HEAD/R/methods.R" class="external-link"><code>R/methods.R</code></a></small>
       <div class="d-none name"><code>SpatialData.Rd</code></div>
     </div>
 
@@ -43,8 +44,11 @@
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">name</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'SpatialData,ANY,ANY'</span></span>
-<span><span class="va">x</span><span class="op">[[</span><span class="va">i</span>, <span class="va">j</span>, <span class="va">...</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co"># S4 method for class 'SpatialDataElement'</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'SpatialDataElement'</span></span>
+<span><span class="fu">meta</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
 <span><span class="fu">images</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -56,7 +60,7 @@
 <span><span class="fu">shapes</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu">points</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
 <span><span class="fu">tables</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -77,7 +81,7 @@
 <span><span class="fu">tableNames</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -89,7 +93,13 @@
 <span><span class="fu">point</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'SpatialData,numeric,ANY,ANY'</span></span>
+<span><span class="va">x</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span></span>
+<span><span class="co"># S4 method for class 'SpatialData,character,ANY,ANY'</span></span>
+<span><span class="va">x</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,list'</span></span>
 <span><span class="fu">images</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -101,13 +111,13 @@
 <span><span class="fu">shapes</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,list'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">points</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,list'</span></span>
 <span><span class="fu">tables</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'SpatialData,character,PointFrame'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="co"># S4 method for class 'SpatialData,character,ImageArray'</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,character,LabelArray'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -115,14 +125,14 @@
 <span><span class="co"># S4 method for class 'SpatialData,character,PointFrame'</span></span>
 <span><span class="fu">point</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'SpatialData,character,PointFrame'</span></span>
+<span><span class="co"># S4 method for class 'SpatialData,character,ShapeFrame'</span></span>
 <span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
-<span><span class="co"># S4 method for class 'SpatialData,character,PointFrame'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="co"># S4 method for class 'SpatialData,character,SingleCellExperiment'</span></span>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,numeric,ImageArray'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,numeric,LabelArray'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -134,10 +144,10 @@
 <span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,numeric,SingleCellExperiment'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, i <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,missing,ImageArray'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,missing,LabelArray'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -149,10 +159,10 @@
 <span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,missing,SingleCellExperiment'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,NULL'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,NULL'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -164,10 +174,10 @@
 <span><span class="fu">point</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,NULL'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,ANY'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/image.html" class="external-link">image</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
+<span><span class="fu">image</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,ANY'</span></span>
 <span><span class="fu">label</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
@@ -179,9 +189,59 @@
 <span><span class="fu">point</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span>
 <span></span>
 <span><span class="co"># S4 method for class 'SpatialData,ANY,ANY'</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
+<span><span class="fu">table</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">value</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-images">images<a class="anchor" aria-label="anchor" href="#arg-images"></a></dt>
+<dd><p>list of <code><a href="ImageArray.html">ImageArray</a></code>s</p></dd>
+
+
+<dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a></dt>
+<dd><p>list of <code><a href="LabelArray.html">LabelArray</a></code>s</p></dd>
+
+
+<dt id="arg-points">points<a class="anchor" aria-label="anchor" href="#arg-points"></a></dt>
+<dd><p>list of <code><a href="PointFrame.html">PointFrame</a></code>s</p></dd>
+
+
+<dt id="arg-shapes">shapes<a class="anchor" aria-label="anchor" href="#arg-shapes"></a></dt>
+<dd><p>list of <code><a href="ShapeFrame.html">ShapeFrame</a></code>s</p></dd>
+
+
+<dt id="arg-tables">tables<a class="anchor" aria-label="anchor" href="#arg-tables"></a></dt>
+<dd><p>list of <code>SingleCellExperiment</code>s</p></dd>
+
+
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p><code>SpatialData</code></p></dd>
+
+
+<dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
+<dd><p>character string for extraction (see <code><a href="https://rdrr.io/r/base/Extract.html" class="external-link">?base::`$`</a></code>).</p></dd>
+
+
+<dt id="arg-i">i<a class="anchor" aria-label="anchor" href="#arg-i"></a></dt>
+<dd><p>character string, scalar or vector of indices
+specifying the element to extract from a given layer.</p></dd>
+
+
+<dt id="arg-value">value<a class="anchor" aria-label="anchor" href="#arg-value"></a></dt>
+<dd><p>(list of) element(s) with layer-compliant object(s),
+or NULL/<code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> to remove an element/layer completely.</p></dd>
+
+
+<dt id="arg-j">j<a class="anchor" aria-label="anchor" href="#arg-j"></a></dt>
+<dd><p>ignored.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>optional arguments passed to and from other methods.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>SpatialData</code></p>
@@ -189,17 +249,91 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">tf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">tf</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">base</span> <span class="op">=</span> <span class="fu"><a href="unzip_merfish_demo.html">unzip_merfish_demo</a></span><span class="op">(</span><span class="va">tf</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> returning path to cached zip</span>
-<span class="r-in"><span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">base</span>, tables<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"blobs.zarr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="va">x</span>, package<span class="op">=</span><span class="st">"SpatialData"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">x</span>, tables<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> class: SpatialData</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> images(1): rasterized</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> labels(0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> shapes(2): anatomical cells</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> points(1): single_molecule</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> tables(1): table</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - images(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_image (3,64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multiscale_image (3,64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - labels(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multiscale_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - points(1):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_points (200)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - shapes(3):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_circles (5,circle)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multipolygons (2,polygon)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_polygons (5,polygon)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - tables(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coordinate systems:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - global(8): blobs_image blobs_multiscale_image ... blobs_polygons</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   blobs_points</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - scale(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - translation(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - affine(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - sequence(1): blobs_labels</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># subsetting</span></span></span>
+<span class="r-in"><span><span class="co"># layers are taken in order of appearance</span></span></span>
+<span class="r-in"><span><span class="co"># (images, labels, points, shapes, tables)</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="op">-</span><span class="fl">4</span><span class="op">]</span> <span class="co"># drop layer</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SpatialData</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - images(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_image (3,64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multiscale_image (3,64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - labels(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multiscale_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - points(1):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_points (200)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - shapes(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - tables(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coordinate systems:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - global(5): blobs_image blobs_multiscale_image blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   blobs_multiscale_labels blobs_points</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - scale(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - translation(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - affine(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - sequence(1): blobs_labels</span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="fl">4</span>, <span class="op">-</span><span class="fl">2</span><span class="op">]</span> <span class="co"># drop element</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SpatialData</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - images(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - labels(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - points(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - shapes(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_circles (5,circle)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_polygons (5,polygon)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - tables(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coordinate systems:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - global(2): blobs_circles blobs_polygons</span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="st">"shapes"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span><span class="op">]</span> <span class="co"># subset layer</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SpatialData</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - images(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - labels(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - points(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - shapes(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_circles (5,circle)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_polygons (5,polygon)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - tables(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coordinate systems:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - global(2): blobs_circles blobs_polygons</span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">]</span> <span class="co"># multiple</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class: SpatialData</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - images(1):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_image (3,64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - labels(2):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   - blobs_multiscale_labels (64,64)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - points(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - shapes(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - tables(0):</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coordinate systems:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - global(3): blobs_image blobs_labels blobs_multiscale_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - scale(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - translation(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - affine(1): blobs_labels</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> - sequence(1): blobs_labels</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -208,7 +342,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Helena L. Crowell, Vince Carey.</p>
+  <p>Developed by Helena L. Crowell, Vince Carey, Yixing E. Dong, Artür Manukyan, Dario Righelli, Louise Deconinck.</p>
 </div>
 
 <div class="pkgdown-footer-right">

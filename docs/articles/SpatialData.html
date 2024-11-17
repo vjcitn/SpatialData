@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialData</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/HelenaLC/SpatialData/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -51,71 +52,183 @@
 
       <h1>`SpatialData`</h1>
                         <h4 data-toc-skip class="author">Helena Lucia Crowell</h4>
-            
-            <h4 data-toc-skip class="date">November 10, 2024</h4>
+                                    <h4 data-toc-skip class="author">Louise Deconinck</h4>
+                                    <h4 data-toc-skip class="author">Artür Manukyan</h4>
+                                    <h4 data-toc-skip class="author">Dario Righelli</h4>
+                                    <h4 data-toc-skip class="author">Estella Dong</h4>
+                                    <h4 data-toc-skip class="author">Vince Carey</h4>
+                        
+            <h4 data-toc-skip class="date">November 17, 2024</h4>
       
-
+      <small class="dont-index">Source: <a href="https://github.com/HelenaLC/SpatialData/blob/HEAD/vignettes/SpatialData.Rmd" class="external-link"><code>vignettes/SpatialData.Rmd</code></a></small>
       <div class="d-none name"><code>SpatialData.Rmd</code></div>
     </div>
 
     
     
-<div class="section level2">
-<h2 id="preamble">Preamble<a class="anchor" aria-label="anchor" href="#preamble"></a>
-</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com" class="external-link">patchwork</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://eliocamp.github.io/ggnewscale/" class="external-link">ggnewscale</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SpatialData</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HelenaLC/SpatialData" class="external-link">SpatialData</a></span><span class="op">)</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>The <code>SpatialData</code> package contains a set of reader and plotting functions for spatial omics data stored as <a href="https://spatialdata.scverse.org/en/latest/index.html" class="external-link">SpatialData</a> <code>.zarr</code> files, following <a href="https://ngff.openmicroscopy.org/latest/#image-layout" class="external-link">OME-NGFF specs</a>.</p>
+<p>Each <code>SpatialData</code> object is composed of five layers: images, labels, shapes, points, and tables. Each layer may contain an arbitrary number of elements.</p>
+<p>Images and labels are represented as <code>ZarrArray</code>s (<em><a href="https://bioconductor.org/packages/3.20/Rarr" class="external-link">Rarr</a></em>). Points and shapes are represented as <em><a href="https://CRAN.R-project.org/package=arrow" class="external-link">arrow</a></em> objects linked to an on-disk <em>.parquet</em> file. As such, all data are represented out of memory.</p>
+<p>Element annotation as well as cross-layer summarizations (e.g., count matrices) are represented as <em><a href="https://bioconductor.org/packages/3.20/SingleCellExperiment" class="external-link">SingleCellExperiment</a></em> as tables.</p>
+<div class="section level3">
+<h3 id="handling">Handling<a class="anchor" aria-label="anchor" href="#handling"></a>
+</h3>
+<p>For demonstration, we read in a toy dataset that is available through the package:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"blobs.zarr"</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="va">x</span>, package<span class="op">=</span><span class="st">"SpatialData"</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## class: SpatialData</span></span>
+<span><span class="co">## - images(2):</span></span>
+<span><span class="co">##   - blobs_image (3,64,64)</span></span>
+<span><span class="co">##   - blobs_multiscale_image (3,64,64)</span></span>
+<span><span class="co">## - labels(2):</span></span>
+<span><span class="co">##   - blobs_labels (64,64)</span></span>
+<span><span class="co">##   - blobs_multiscale_labels (64,64)</span></span>
+<span><span class="co">## - points(1):</span></span>
+<span><span class="co">##   - blobs_points (200)</span></span>
+<span><span class="co">## - shapes(3):</span></span>
+<span><span class="co">##   - blobs_circles (5,circle)</span></span>
+<span><span class="co">##   - blobs_multipolygons (2,polygon)</span></span>
+<span><span class="co">##   - blobs_polygons (5,polygon)</span></span>
+<span><span class="co">## - tables(1):</span></span>
+<span><span class="co">##   - table (3,10)</span></span>
+<span><span class="co">## coordinate systems:</span></span>
+<span><span class="co">## - global(8): blobs_image blobs_multiscale_image ... blobs_polygons</span></span>
+<span><span class="co">##   blobs_points</span></span>
+<span><span class="co">## - scale(1): blobs_labels</span></span>
+<span><span class="co">## - translation(1): blobs_labels</span></span>
+<span><span class="co">## - affine(1): blobs_labels</span></span>
+<span><span class="co">## - sequence(1): blobs_labels</span></span></code></pre>
+<p><code>SpatialData</code> object behave like a list, thereby supporting flexible accession, e.g., via <code>$</code> and <code>[[</code>, using character or integer indices etc. Specifically,</p>
+<ul>
+<li>
+<code>image/label/shape/point/table()</code> retrieve one element</li>
+<li>
+<code>images/labels/shapes/points/tables()</code> retrieve one layer</li>
+<li>
+<code>image/label/shape/point/tableNames()</code> retrieve element names</li>
+</ul>
+<p>Let’s demonstrate these capabilities using the image layer:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialData.html">shapeNames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="co"># there are two images</span></span>
+<span><span class="fu"><a href="../reference/SpatialData.html">shapes</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="co"># this is a list of them</span></span>
+<span><span class="fu"><a href="../reference/SpatialData.html">shape</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="co"># this is the 1st one</span></span>
+<span><span class="fu"><a href="../reference/SpatialData.html">shape</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"blobs_polygons"</span><span class="op">)</span> <span class="co"># this is the 3nd one</span></span>
+<span><span class="va">x</span><span class="op">$</span><span class="va">shapes</span><span class="op">$</span><span class="va">blobs_circles</span> <span class="co"># list-like handling also works</span></span></code></pre></div>
+<p>Each element is made up of two key components:</p>
+<ul>
+<li>
+<code>data</code>: the actual array or table (for images/labels and shapes/points, respectively)</li>
+<li>
+<code>meta</code>: list of metadata retrieved from an OME-NGFF compliant <em>.zattrs</em> (stored as <code>Zattrs</code>)</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="fu"><a href="../reference/SpatialData.html">shape</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## FileSystemDataset with 1 Parquet file</span></span>
+<span><span class="co">## 2 columns</span></span>
+<span><span class="co">## geometry: geoarrow.wkb &lt;crs: unspecified&gt;</span></span>
+<span><span class="co">## radius: int64</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## See $metadata for additional Schema metadata</span></span></code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">meta</span><span class="op">(</span><span class="fu"><a href="../reference/SpatialData.html">shape</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
+<pre><code><span><span class="co">## An object of class "Zattrs"</span></span>
+<span><span class="co">## [[1]]</span></span>
+<span><span class="co">## [1] "x" "y"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[2]]</span></span>
+<span><span class="co">##     input.axes input.name  output.axes output.name     type</span></span>
+<span><span class="co">## 1 c("x", "....         xy c("x", "....      global identity</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[3]]</span></span>
+<span><span class="co">## [1] "ngff:shapes"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[4]]</span></span>
+<span><span class="co">## [[4]]$version</span></span>
+<span><span class="co">## [1] "0.2"</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="multiscales">Multiscales<a class="anchor" aria-label="anchor" href="#multiscales"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/SpatialData.html">image</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"blobs_multiscale_image"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## class: ImageArray (MultiScale) </span></span>
+<span><span class="co">## Scales (3): (3,64,64) (3,32,32) (3,16,16)</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="coordinates">Coordinates<a class="anchor" aria-label="anchor" href="#coordinates"></a>
+</h3>
+<p><code>Zattrs</code> specify an explicit relationship between elements and coordinate systems. We can represent these are a graph as follows:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="op">(</span><span class="va">g</span> <span class="op">&lt;-</span> <span class="fu">SpatialData</span><span class="fu">:::</span><span class="fu"><a href="../reference/coord2graph.html">.coord2graph</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## A graphAM graph with directed edges</span></span>
+<span><span class="co">## Number of Nodes = 14 </span></span>
+<span><span class="co">## Number of Edges = 13</span></span></code></pre>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">graph</span><span class="fu">::</span><span class="fu">plot</span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
+<p><img src="SpatialData_files/figure-html/cs-graph-1.png" width="700"></p>
+<p>The above representation greatly facilitates queries of the transformation(s) required to spatially align elements. <code>blobs_labels</code>, for example, requires a sequential transformation (scaling and translation) for the <code>sequence</code> space:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">SpatialData</span><span class="fu">:::</span><span class="fu"><a href="../reference/get_path.html">.get_path</a></span><span class="op">(</span><span class="va">g</span>, <span class="st">"blobs_labels"</span>, <span class="st">"sequence"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [[1]]</span></span>
+<span><span class="co">## [[1]]$data</span></span>
+<span><span class="co">## [1] 3 2</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[1]]$type</span></span>
+<span><span class="co">## [1] "scale"</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[2]]</span></span>
+<span><span class="co">## [[2]]$data</span></span>
+<span><span class="co">## [1] -50  10</span></span>
+<span><span class="co">## </span></span>
+<span><span class="co">## [[2]]$type</span></span>
+<span><span class="co">## [1] "translation"</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="visualization">Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># layered</span></span>
+<span><span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotLabel</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotShape</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotShape</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://eliocamp.github.io/ggnewscale/reference/new_scale.html" class="external-link">new_scale_color</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotPoint</a></span><span class="op">(</span><span class="va">x</span>, c<span class="op">=</span><span class="st">"genes"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="SpatialData_files/figure-html/blobs-plot-1.png" width="700"></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># multiscales</span></span>
+<span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>nrow<span class="op">=</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, \<span class="op">(</span><span class="va">.</span><span class="op">)</span> </span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">2</span>, k<span class="op">=</span><span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="SpatialData_files/figure-html/blobs-plot-2.png" width="700"></p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="merfish">MERFISH<a class="anchor" aria-label="anchor" href="#merfish"></a>
+<h2 id="technologies">Technologies<a class="anchor" aria-label="anchor" href="#technologies"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">tf</span><span class="op">)</span></span>
-<span><span class="va">merpath</span> <span class="op">=</span> <span class="fu"><a href="../reference/unzip_merfish_demo.html">unzip_merfish_demo</a></span><span class="op">(</span>destination<span class="op">=</span><span class="va">tf</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">merpath</span><span class="op">)</span></span></code></pre></div>
-<div class="section level4">
-<h4 id="handling">handling<a class="anchor" aria-label="anchor" href="#handling"></a>
-</h4>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## class: SingleCellExperiment </span></span>
-<span><span class="co">## dim: 268 2389 </span></span>
-<span><span class="co">## metadata(1): spatialdata_attrs</span></span>
-<span><span class="co">## assays(1): X</span></span>
-<span><span class="co">## rownames(268): 1700022I11Rik 1810046K07Rik ... Wnt7b Zfp804b</span></span>
-<span><span class="co">## rowData names(0):</span></span>
-<span><span class="co">## colnames(2389): 0 1 ... 2397 2398</span></span>
-<span><span class="co">## colData names(2): cell_id region</span></span>
-<span><span class="co">## reducedDimNames(0):</span></span>
-<span><span class="co">## mainExpName: NULL</span></span>
-<span><span class="co">## altExpNames(0):</span></span></code></pre>
-<p>all these should work (where <code>shape</code> could be <code>image/label/point/table</code>)…</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># object should behave like a names list</span></span>
-<span><span class="va">x</span><span class="op">$</span><span class="va">shapes</span><span class="op">$</span><span class="va">anatomical</span></span>
-<span><span class="co"># character vector</span></span>
-<span><span class="fu">shapeNames</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
-<span><span class="co"># list of elements in layer</span></span>
-<span><span class="fu">shapes</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> </span>
-<span><span class="co"># single element</span></span>
-<span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="co"># default</span></span>
-<span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="st">"single_molecule"</span><span class="op">)</span></span>
-<span><span class="co"># get (meta)data from an element</span></span>
-<span><span class="co"># (arrow for point/shape, ZarrArray for label/image)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> </span>
-<span><span class="co"># .zattrs, currently just rendered as fromJSON would</span></span>
-<span><span class="fu">meta</span><span class="op">(</span><span class="fu">shape</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="plotting">plotting<a class="anchor" aria-label="anchor" href="#plotting"></a>
-</h4>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">point</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2e3</span><span class="op">)</span></span>
-<span><span class="fu">point</span><span class="op">(</span><span class="va">x</span>, <span class="st">"2k"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<div class="section level3">
+<h3 id="merfish">MERFISH<a class="anchor" aria-label="anchor" href="#merfish"></a>
+</h3>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span><span class="op">)</span> <span class="co"># problem in action related to file reference (URL?) scheme</span></span>
+<span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_merfish_demo.html">unzip_merfish_demo</a></span><span class="op">(</span>dest<span class="op">=</span><span class="va">td</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span></span></code></pre></div>
+<p>In this example data, we do not have a <code>label</code> for the <code>shape</code> polygons. Such labels could be morphological regions annotated by pathologists.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialData.html">point</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2e3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/SpatialData.html">point</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"2k"</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">p</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotPoint</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="st">"2k"</span>, c<span class="op">=</span><span class="st">"cell_type"</span>, s<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
@@ -123,72 +236,172 @@
 <span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotShape</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="st">"anatomical"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">6</span>, <span class="st">"Spectral"</span><span class="op">)</span><span class="op">)</span> </span></code></pre></div>
 <p><img src="SpatialData_files/figure-html/merfish-plot-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotShape</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">2</span>, c<span class="op">=</span><span class="st">"black"</span>, f<span class="op">=</span><span class="cn">NA</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_continuous</a></span><span class="op">(</span>range<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="SpatialData_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p>We could also show plot the transcript without cell segmentation. There are only 2,000 cells, but 3,714,642 molecules, so it takes a long time to compile.</p>
+<p>Lets crop the image and visualize and put it next to the original image:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>xmin<span class="op">=</span><span class="fl">1500</span>, xmax<span class="op">=</span><span class="fl">2300</span>, ymin<span class="op">=</span><span class="fl">4800</span>, ymax<span class="op">=</span><span class="fl">5500</span><span class="op">)</span></span>
+<span><span class="va">bb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>xmin<span class="op">=</span><span class="fl">1500</span>, xmax<span class="op">=</span><span class="fl">2300</span>, ymin<span class="op">=</span><span class="fl">5500</span>, ymax<span class="op">=</span><span class="fl">6500</span><span class="op">)</span></span>
+<span><span class="va">crop</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">query</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="../reference/SpatialData.html">image</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, <span class="va">bb</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/SpatialData.html">SpatialData</a></span><span class="op">(</span>images<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"foo"</span><span class="op">=</span><span class="va">crop</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">|</span> <span class="va">q</span></span></code></pre></div>
 </div>
-</div>
-<div class="section level2">
-<h2 id="mibitof">MibiTOF<a class="anchor" aria-label="anchor" href="#mibitof"></a>
-</h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#x &lt;- file.path("..", "inst", "extdata", "mibitof.zarr")</span></span>
-<span><span class="co">#(x &lt;- readSpatialData(x))</span></span>
-<span><span class="va">td</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="va">mibipath</span> <span class="op">=</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"mibitof.zip"</span>, destination<span class="op">=</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">mibipath</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, \<span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>        <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>        <span class="fu"><a href="https://eliocamp.github.io/ggnewscale/reference/new_scale.html" class="external-link">new_scale_fill</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>        <span class="fu"><a href="../reference/plotSpatialData.html">plotLabel</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span>, c<span class="op">=</span><span class="st">"Cluster"</span>, a<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides<span class="op">=</span><span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="mibitof">MibiTOF<a class="anchor" aria-label="anchor" href="#mibitof"></a>
+</h3>
+<p>Colorectal carcinoma, 25 MB; no shapes, no points.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"mibitof.zip"</span>, dest<span class="op">=</span><span class="va">td</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## class: SpatialData</span></span>
+<span><span class="co">## - images(3):</span></span>
+<span><span class="co">##   - point16_image (3,1024,1024)</span></span>
+<span><span class="co">##   - point23_image (3,1024,1024)</span></span>
+<span><span class="co">##   - point8_image (3,1024,1024)</span></span>
+<span><span class="co">## - labels(3):</span></span>
+<span><span class="co">##   - point16_labels (1024,1024)</span></span>
+<span><span class="co">##   - point23_labels (1024,1024)</span></span>
+<span><span class="co">##   - point8_labels (1024,1024)</span></span>
+<span><span class="co">## - points(0):</span></span>
+<span><span class="co">## - shapes(0):</span></span>
+<span><span class="co">## - tables(1):</span></span>
+<span><span class="co">##   - table (36,3309)</span></span>
+<span><span class="co">## coordinate systems:</span></span>
+<span><span class="co">## - point16(2): point16_image point16_labels</span></span>
+<span><span class="co">## - point23(2): point23_image point23_labels</span></span>
+<span><span class="co">## - point8(2): point8_image point8_labels</span></span></code></pre>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>nrow<span class="op">=</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, \<span class="op">(</span><span class="va">.</span><span class="op">)</span> </span>
+<span>    <span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">.</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotLabel</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">.</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="SpatialData_files/figure-html/mibitof-plot-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="visiumhd">VisiumHD<a class="anchor" aria-label="anchor" href="#visiumhd"></a>
-</h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">td</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="va">vishdpath</span> <span class="op">=</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"visium_hd_3.0.0_io.zip"</span>, destination<span class="op">=</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">vishdpath</span>, tables<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="visiumhd">VisiumHD<a class="anchor" aria-label="anchor" href="#visiumhd"></a>
+</h3>
+<p>Mouse intestine, 1GB; 4 image resolutions and 3 shapes at 2, 8, and 16 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>m.</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">nm</span> <span class="op">&lt;-</span> <span class="st">"visium_hd_3.0.0_io.zip"</span></span>
+<span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="va">nm</span>, dest<span class="op">=</span><span class="va">td</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span>, tables<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: SpatialData</span></span>
-<span><span class="co">## images(4): Visium_HD_Mouse_Small_Intestine_cytassist_image</span></span>
+<span><span class="co">## - images(4):</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_cytassist_image (3,3000,3200)</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_full_image (3,21943,23618)</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_hires_image (3,5575,6000)</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_lowres_image (3,558,600)</span></span>
+<span><span class="co">## - labels(0):</span></span>
+<span><span class="co">## - points(0):</span></span>
+<span><span class="co">## - shapes(3):</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_square_002um (5479660,circle)</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_square_008um (351817,circle)</span></span>
+<span><span class="co">##   - Visium_HD_Mouse_Small_Intestine_square_016um (91033,circle)</span></span>
+<span><span class="co">## - tables(0):</span></span>
+<span><span class="co">## coordinate systems:</span></span>
+<span><span class="co">## - global(5): Visium_HD_Mouse_Small_Intestine_cytassist_image</span></span>
 <span><span class="co">##   Visium_HD_Mouse_Small_Intestine_full_image</span></span>
-<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_hires_image</span></span>
-<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_lowres_image</span></span>
-<span><span class="co">## labels(0):</span></span>
-<span><span class="co">## shapes(3): Visium_HD_Mouse_Small_Intestine_square_002um</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_002um</span></span>
 <span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_008um</span></span>
 <span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_016um</span></span>
-<span><span class="co">## points(0):</span></span>
-<span><span class="co">## tables(1): square_016um</span></span></code></pre>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">## - downscaled_hires(4): Visium_HD_Mouse_Small_Intestine_hires_image</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_002um</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_008um</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_016um</span></span>
+<span><span class="co">## - downscaled_lowres(4): Visium_HD_Mouse_Small_Intestine_lowres_image</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_002um</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_008um</span></span>
+<span><span class="co">##   Visium_HD_Mouse_Small_Intestine_square_016um</span></span></code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSpatialData.html">plotSpatialData</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="../reference/plotSpatialData.html">plotImage</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/plotSpatialData.html">plotShape</a></span><span class="op">(</span><span class="va">x</span>, i<span class="op">=</span><span class="fl">3</span>, s<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 <p><img src="SpatialData_files/figure-html/visiumhd-plot-1.png" width="700"></p>
 </div>
-<div class="section level2">
-<h2 id="aligned-breast-cancer-example">Aligned breast cancer example<a class="anchor" aria-label="anchor" href="#aligned-breast-cancer-example"></a>
-</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">td</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="va">pa</span> <span class="op">=</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"visium_associated_xenium_io_aligned.zip"</span>, dest<span class="op">=</span><span class="va">td</span><span class="op">)</span></span>
-<span><span class="va">ali</span> <span class="op">=</span><span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span></span>
-<span><span class="va">ali</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="cycif-mcmicro-output">CyCIF (MCMICRO output)<a class="anchor" aria-label="anchor" href="#cycif-mcmicro-output"></a>
+</h3>
+<p>Small lung adenocarcinoma, 250 MB; 1 image, 2 labels, 2 tables.</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">nm</span> <span class="op">&lt;-</span> <span class="st">"mcmicro_io.zip"</span></span>
+<span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="va">nm</span>, dest<span class="op">=</span><span class="va">td</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## class: SpatialData</span></span>
-<span><span class="co">## images(3): CytAssist_FFPE_Human_Breast_Cancer_full_image</span></span>
-<span><span class="co">##   CytAssist_FFPE_Human_Breast_Cancer_hires_image</span></span>
-<span><span class="co">##   CytAssist_FFPE_Human_Breast_Cancer_lowres_image</span></span>
-<span><span class="co">## labels(0):</span></span>
-<span><span class="co">## shapes(1): CytAssist_FFPE_Human_Breast_Cancer</span></span>
-<span><span class="co">## points(0):</span></span>
-<span><span class="co">## tables(1): table</span></span></code></pre>
+<span><span class="co">## - images(1):</span></span>
+<span><span class="co">##   - exemplar-001_image (12,3139,2511)</span></span>
+<span><span class="co">## - labels(2):</span></span>
+<span><span class="co">##   - exemplar-001_cell (3139,2511)</span></span>
+<span><span class="co">##   - exemplar-001_nuclei (3139,2511)</span></span>
+<span><span class="co">## - points(0):</span></span>
+<span><span class="co">## - shapes(0):</span></span>
+<span><span class="co">## - tables(2):</span></span>
+<span><span class="co">##   - exemplar-001--ilastik_cell (12,11607)</span></span>
+<span><span class="co">##   - exemplar-001--unmicst_cell (12,11170)</span></span>
+<span><span class="co">## coordinate systems:</span></span>
+<span><span class="co">## - global(3): exemplar-001_image exemplar-001_cell exemplar-001_nuclei</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="imc-steinbock">IMC (Steinbock)<a class="anchor" aria-label="anchor" href="#imc-steinbock"></a>
+</h3>
+<p>4 different cancers (SCCHN, BCC, NSCLC, CRC), 820 MB; 14 images, 14 labels, 1 table.</p>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">td</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">nm</span> <span class="op">&lt;-</span> <span class="st">"steinbock_io.zip"</span></span>
+<span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/unzip_spd_demo.html">unzip_spd_demo</a></span><span class="op">(</span>zipname<span class="op">=</span><span class="va">nm</span>, dest<span class="op">=</span><span class="va">td</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/readSpatialData.html">readSpatialData</a></span><span class="op">(</span><span class="va">pa</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## class: SpatialData</span></span>
+<span><span class="co">## - images(14):</span></span>
+<span><span class="co">##   - Patient1_001_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient1_002_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient1_003_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient2_001_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient2_002_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient2_003_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient2_004_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient3_001_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient3_002_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient3_003_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient4_005_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient4_006_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient4_007_image (40,600,600)</span></span>
+<span><span class="co">##   - Patient4_008_image (40,600,600)</span></span>
+<span><span class="co">## - labels(14):</span></span>
+<span><span class="co">##   - Patient1_001_labels (600,600)</span></span>
+<span><span class="co">##   - Patient1_002_labels (600,600)</span></span>
+<span><span class="co">##   - Patient1_003_labels (600,600)</span></span>
+<span><span class="co">##   - Patient2_001_labels (600,600)</span></span>
+<span><span class="co">##   - Patient2_002_labels (600,600)</span></span>
+<span><span class="co">##   - Patient2_003_labels (600,600)</span></span>
+<span><span class="co">##   - Patient2_004_labels (600,600)</span></span>
+<span><span class="co">##   - Patient3_001_labels (600,600)</span></span>
+<span><span class="co">##   - Patient3_002_labels (600,600)</span></span>
+<span><span class="co">##   - Patient3_003_labels (600,600)</span></span>
+<span><span class="co">##   - Patient4_005_labels (600,600)</span></span>
+<span><span class="co">##   - Patient4_006_labels (600,600)</span></span>
+<span><span class="co">##   - Patient4_007_labels (600,600)</span></span>
+<span><span class="co">##   - Patient4_008_labels (600,600)</span></span>
+<span><span class="co">## - points(0):</span></span>
+<span><span class="co">## - shapes(0):</span></span>
+<span><span class="co">## - tables(1):</span></span>
+<span><span class="co">##   - table (40,47859)</span></span>
+<span><span class="co">## coordinate systems:</span></span>
+<span><span class="co">## - Patient1_001(2): Patient1_001_image Patient1_001_labels</span></span>
+<span><span class="co">## - Patient1_002(2): Patient1_002_image Patient1_002_labels</span></span>
+<span><span class="co">## - Patient1_003(2): Patient1_003_image Patient1_003_labels</span></span>
+<span><span class="co">## - Patient2_001(2): Patient2_001_image Patient2_001_labels</span></span>
+<span><span class="co">## - Patient2_002(2): Patient2_002_image Patient2_002_labels</span></span>
+<span><span class="co">## - Patient2_003(2): Patient2_003_image Patient2_003_labels</span></span>
+<span><span class="co">## - Patient2_004(2): Patient2_004_image Patient2_004_labels</span></span>
+<span><span class="co">## - Patient3_001(2): Patient3_001_image Patient3_001_labels</span></span>
+<span><span class="co">## - Patient3_002(2): Patient3_002_image Patient3_002_labels</span></span>
+<span><span class="co">## - Patient3_003(2): Patient3_003_image Patient3_003_labels</span></span>
+<span><span class="co">## - Patient4_005(2): Patient4_005_image Patient4_005_labels</span></span>
+<span><span class="co">## - Patient4_006(2): Patient4_006_image Patient4_006_labels</span></span>
+<span><span class="co">## - Patient4_007(2): Patient4_007_image Patient4_007_labels</span></span>
+<span><span class="co">## - Patient4_008(2): Patient4_008_image Patient4_008_labels</span></span></code></pre>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
@@ -208,56 +421,70 @@
 <span><span class="co">## tzcode source: internal</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## attached base packages:</span></span>
-<span><span class="co">## [1] stats4    stats     graphics  grDevices utils     datasets  methods  </span></span>
-<span><span class="co">## [8] base     </span></span>
+<span><span class="co">## [1] grid      stats4    stats     graphics  grDevices utils     datasets </span></span>
+<span><span class="co">## [8] methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">##  [1] geoarrow_0.2.1              SpatialData_0.99.5         </span></span>
-<span><span class="co">##  [3] SingleCellExperiment_1.28.0 SummarizedExperiment_1.36.0</span></span>
-<span><span class="co">##  [5] Biobase_2.66.0              GenomicRanges_1.58.0       </span></span>
-<span><span class="co">##  [7] GenomeInfoDb_1.42.0         IRanges_2.40.0             </span></span>
-<span><span class="co">##  [9] S4Vectors_0.44.0            BiocGenerics_0.52.0        </span></span>
-<span><span class="co">## [11] MatrixGenerics_1.18.0       matrixStats_1.4.1          </span></span>
-<span><span class="co">## [13] ggnewscale_0.5.0            patchwork_1.3.0            </span></span>
-<span><span class="co">## [15] ggplot2_3.5.1               BiocStyle_2.34.0           </span></span>
+<span><span class="co">##  [1] Rgraphviz_2.50.0      graph_1.84.0          Rarr_1.6.0           </span></span>
+<span><span class="co">##  [4] DelayedArray_0.32.0   SparseArray_1.6.0     S4Arrays_1.6.0       </span></span>
+<span><span class="co">##  [7] abind_1.4-8           IRanges_2.40.0        S4Vectors_0.44.0     </span></span>
+<span><span class="co">## [10] MatrixGenerics_1.18.0 matrixStats_1.4.1     BiocGenerics_0.52.0  </span></span>
+<span><span class="co">## [13] Matrix_1.7-1          SpatialData_0.99.14   ggnewscale_0.5.0     </span></span>
+<span><span class="co">## [16] patchwork_1.3.0       ggplot2_3.5.1         BiocStyle_2.34.0     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##   [1] DBI_1.2.3               bitops_1.0-9            rlang_1.1.4            </span></span>
-<span><span class="co">##   [4] magrittr_2.0.3          Rarr_1.5.3              e1071_1.7-16           </span></span>
-<span><span class="co">##   [7] compiler_4.4.1          RSQLite_2.3.7           dir.expiry_1.14.0      </span></span>
-<span><span class="co">##  [10] paws.storage_0.7.0      png_0.1-8               systemfonts_1.1.0      </span></span>
-<span><span class="co">##  [13] fftwtools_0.9-11        vctrs_0.6.5             stringr_1.5.1          </span></span>
-<span><span class="co">##  [16] wk_0.9.4                pkgconfig_2.0.3         crayon_1.5.3           </span></span>
-<span><span class="co">##  [19] fastmap_1.2.0           dbplyr_2.5.0            XVector_0.46.0         </span></span>
-<span><span class="co">##  [22] labeling_0.4.3          paws.common_0.7.7       utf8_1.2.4             </span></span>
-<span><span class="co">##  [25] rmarkdown_2.28          UCSC.utils_1.2.0        ragg_1.3.3             </span></span>
-<span><span class="co">##  [28] purrr_1.0.2             bit_4.5.0               xfun_0.48              </span></span>
-<span><span class="co">##  [31] zlibbioc_1.52.0         cachem_1.1.0            jsonlite_1.8.9         </span></span>
-<span><span class="co">##  [34] blob_1.2.4              highr_0.11              DelayedArray_0.32.0    </span></span>
-<span><span class="co">##  [37] jpeg_0.1-10             tiff_0.1-12             parallel_4.4.1         </span></span>
-<span><span class="co">##  [40] R6_2.5.1                bslib_0.8.0             stringi_1.8.4          </span></span>
-<span><span class="co">##  [43] reticulate_1.39.0       jquerylib_0.1.4         Rcpp_1.0.13-1          </span></span>
-<span><span class="co">##  [46] bookdown_0.41           assertthat_0.2.1        knitr_1.48             </span></span>
-<span><span class="co">##  [49] R.utils_2.12.3          Matrix_1.7-1            tidyselect_1.2.1       </span></span>
-<span><span class="co">##  [52] abind_1.4-8             yaml_2.3.10             EBImage_4.47.1         </span></span>
-<span><span class="co">##  [55] codetools_0.2-20        zellkonverter_1.16.0    curl_5.2.3             </span></span>
-<span><span class="co">##  [58] lattice_0.22-6          tibble_3.2.1            basilisk.utils_1.18.0  </span></span>
-<span><span class="co">##  [61] withr_3.0.2             evaluate_1.0.1          sf_1.0-18              </span></span>
-<span><span class="co">##  [64] desc_1.4.3              units_0.8-5             proxy_0.4-27           </span></span>
-<span><span class="co">##  [67] BiocFileCache_2.14.0    pillar_1.9.0            BiocManager_1.30.25    </span></span>
-<span><span class="co">##  [70] filelock_1.0.3          KernSmooth_2.23-24      generics_0.1.3         </span></span>
-<span><span class="co">##  [73] RCurl_1.98-1.16         nanoarrow_0.6.0         munsell_0.5.1          </span></span>
-<span><span class="co">##  [76] scales_1.3.0            class_7.3-22            glue_1.8.0             </span></span>
-<span><span class="co">##  [79] tools_4.4.1             locfit_1.5-9.10         fs_1.6.5               </span></span>
-<span><span class="co">##  [82] grid_4.4.1              colorspace_2.1-1        GenomeInfoDbData_1.2.13</span></span>
-<span><span class="co">##  [85] basilisk_1.18.0         cli_3.6.3               textshaping_0.4.0      </span></span>
-<span><span class="co">##  [88] fansi_1.0.6             S4Arrays_1.6.0          arrow_17.0.0.1         </span></span>
-<span><span class="co">##  [91] dplyr_1.1.4             gtable_0.3.6            R.methodsS3_1.8.2      </span></span>
-<span><span class="co">##  [94] sass_0.4.9              digest_0.6.37           classInt_0.4-10        </span></span>
-<span><span class="co">##  [97] SparseArray_1.6.0       htmlwidgets_1.6.4       farver_2.1.2           </span></span>
-<span><span class="co">## [100] memoise_2.0.1           htmltools_0.5.8.1       pkgdown_2.1.1          </span></span>
-<span><span class="co">## [103] R.oo_1.26.0             lifecycle_1.0.4         httr_1.4.7             </span></span>
-<span><span class="co">## [106] bit64_4.5.2</span></span></code></pre>
+<span><span class="co">##   [1] DBI_1.2.3                   RBGL_1.82.0                </span></span>
+<span><span class="co">##   [3] anndataR_0.99.0             rlang_1.1.4                </span></span>
+<span><span class="co">##   [5] magrittr_2.0.3              e1071_1.7-16               </span></span>
+<span><span class="co">##   [7] compiler_4.4.1              RSQLite_2.3.7              </span></span>
+<span><span class="co">##   [9] dir.expiry_1.14.0           paws.storage_0.7.0         </span></span>
+<span><span class="co">##  [11] png_0.1-8                   systemfonts_1.1.0          </span></span>
+<span><span class="co">##  [13] vctrs_0.6.5                 stringr_1.5.1              </span></span>
+<span><span class="co">##  [15] wk_0.9.4                    pkgconfig_2.0.3            </span></span>
+<span><span class="co">##  [17] crayon_1.5.3                fastmap_1.2.0              </span></span>
+<span><span class="co">##  [19] dbplyr_2.5.0                XVector_0.46.0             </span></span>
+<span><span class="co">##  [21] labeling_0.4.3              paws.common_0.7.7          </span></span>
+<span><span class="co">##  [23] utf8_1.2.4                  rmarkdown_2.29             </span></span>
+<span><span class="co">##  [25] UCSC.utils_1.2.0            ragg_1.3.3                 </span></span>
+<span><span class="co">##  [27] purrr_1.0.2                 bit_4.5.0                  </span></span>
+<span><span class="co">##  [29] xfun_0.49                   zlibbioc_1.52.0            </span></span>
+<span><span class="co">##  [31] cachem_1.1.0                GenomeInfoDb_1.42.0        </span></span>
+<span><span class="co">##  [33] jsonlite_1.8.9              blob_1.2.4                 </span></span>
+<span><span class="co">##  [35] tweenr_2.0.3                parallel_4.4.1             </span></span>
+<span><span class="co">##  [37] R6_2.5.1                    bslib_0.8.0                </span></span>
+<span><span class="co">##  [39] stringi_1.8.4               reticulate_1.40.0          </span></span>
+<span><span class="co">##  [41] GenomicRanges_1.58.0        jquerylib_0.1.4            </span></span>
+<span><span class="co">##  [43] Rcpp_1.0.13-1               bookdown_0.41              </span></span>
+<span><span class="co">##  [45] assertthat_0.2.1            SummarizedExperiment_1.36.0</span></span>
+<span><span class="co">##  [47] knitr_1.49                  R.utils_2.12.3             </span></span>
+<span><span class="co">##  [49] tidyselect_1.2.1            yaml_2.3.10                </span></span>
+<span><span class="co">##  [51] zellkonverter_1.16.0        curl_6.0.1                 </span></span>
+<span><span class="co">##  [53] lattice_0.22-6              tibble_3.2.1               </span></span>
+<span><span class="co">##  [55] Biobase_2.66.0              basilisk.utils_1.18.0      </span></span>
+<span><span class="co">##  [57] withr_3.0.2                 evaluate_1.0.1             </span></span>
+<span><span class="co">##  [59] sf_1.0-19                   desc_1.4.3                 </span></span>
+<span><span class="co">##  [61] units_0.8-5                 proxy_0.4-27               </span></span>
+<span><span class="co">##  [63] polyclip_1.10-7             BiocFileCache_2.14.0       </span></span>
+<span><span class="co">##  [65] pillar_1.9.0                BiocManager_1.30.25        </span></span>
+<span><span class="co">##  [67] filelock_1.0.3              KernSmooth_2.23-24         </span></span>
+<span><span class="co">##  [69] pizzarr_0.1.0               generics_0.1.3             </span></span>
+<span><span class="co">##  [71] nanoarrow_0.6.0             munsell_0.5.1              </span></span>
+<span><span class="co">##  [73] scales_1.3.0                class_7.3-22               </span></span>
+<span><span class="co">##  [75] glue_1.8.0                  tools_4.4.1                </span></span>
+<span><span class="co">##  [77] fs_1.6.5                    colorspace_2.1-1           </span></span>
+<span><span class="co">##  [79] SingleCellExperiment_1.28.1 GenomeInfoDbData_1.2.13    </span></span>
+<span><span class="co">##  [81] basilisk_1.18.0             ggforce_0.4.2              </span></span>
+<span><span class="co">##  [83] cli_3.6.3                   textshaping_0.4.0          </span></span>
+<span><span class="co">##  [85] fansi_1.0.6                 arrow_17.0.0.1             </span></span>
+<span><span class="co">##  [87] dplyr_1.1.4                 geoarrow_0.2.1             </span></span>
+<span><span class="co">##  [89] gtable_0.3.6                R.methodsS3_1.8.2          </span></span>
+<span><span class="co">##  [91] sass_0.4.9                  digest_0.6.37              </span></span>
+<span><span class="co">##  [93] classInt_0.4-10             htmlwidgets_1.6.4          </span></span>
+<span><span class="co">##  [95] farver_2.1.2                memoise_2.0.1              </span></span>
+<span><span class="co">##  [97] htmltools_0.5.8.1           pkgdown_2.1.1              </span></span>
+<span><span class="co">##  [99] R.oo_1.27.0                 lifecycle_1.0.4            </span></span>
+<span><span class="co">## [101] httr_1.4.7                  bit64_4.5.2                </span></span>
+<span><span class="co">## [103] MASS_7.3-61</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -266,7 +493,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Helena L. Crowell, Vince Carey.</p>
+  <p>Developed by Helena L. Crowell, Vince Carey, Yixing E. Dong, Artür Manukyan, Dario Righelli, Louise Deconinck.</p>
 </div>
 
 <div class="pkgdown-footer-right">

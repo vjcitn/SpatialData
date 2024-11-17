@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">SpatialData</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,6 +19,7 @@
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/HelenaLC/SpatialData/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -28,7 +29,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>unzip selected demo data to specified folder</h1>
-
+      <small class="dont-index">Source: <a href="https://github.com/HelenaLC/SpatialData/blob/HEAD/R/merfish_demo.R" class="external-link"><code>R/merfish_demo.R</code></a></small>
       <div class="d-none name"><code>unzip_spd_demo.Rd</code></div>
     </div>
 
@@ -73,15 +74,15 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">tf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">tf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">tf</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">pa</span> <span class="op">=</span> <span class="fu">unzip_spd_demo</span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"mibitof.zip"</span>, destination<span class="op">=</span><span class="va">tf</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">pa</span> <span class="op">&lt;-</span> <span class="fu">unzip_spd_demo</span><span class="op">(</span>zipname<span class="op">=</span><span class="st">"mibitof.zip"</span>, destination<span class="op">=</span><span class="va">tf</span>, source<span class="op">=</span><span class="st">"biocOSN"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> returning path to cached zip</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="va">pa</span>, full.names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpAKW4ZT/file4aba214dad06/data.zarr/images"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpAKW4ZT/file4aba214dad06/data.zarr/labels"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpAKW4ZT/file4aba214dad06/data.zarr/tables"   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpAKW4ZT/file4aba214dad06/data.zarr/zmetadata"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpwStVyQ/filec7e6b0b3036/data.zarr/images"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpwStVyQ/filec7e6b0b3036/data.zarr/labels"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpwStVyQ/filec7e6b0b3036/data.zarr/tables"   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "/var/folders/n4/p9th81md60s8nv12yv40sv8m0000gp/T//RtmpwStVyQ/filec7e6b0b3036/data.zarr/zmetadata"</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -89,7 +90,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Helena L. Crowell, Vince Carey.</p>
+  <p>Developed by Helena L. Crowell, Vince Carey, Yixing E. Dong, Artür Manukyan, Dario Righelli, Louise Deconinck.</p>
 </div>
 
 <div class="pkgdown-footer-right">
