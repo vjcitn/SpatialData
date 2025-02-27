@@ -62,9 +62,9 @@ Suggests:
     SpatialData.data,
     SpatialData.plot,
     testthat,
+    patchwork,
     DT
 Enhances:
-    patchwork,
     anndataR,
     pizzarr
 Remotes:
